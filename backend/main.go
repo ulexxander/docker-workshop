@@ -13,7 +13,9 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	endpoints := Endpoints{}
+	endpoints := Endpoints{
+		Notes: &NotesStoreMemory{},
+	}
 	endpoints.Register(mux)
 
 	addr, ok := os.LookupEnv("HTTP_SERVER_ADDR")
@@ -70,7 +72,7 @@ func (e *Endpoints) Register(m *http.ServeMux) {
 			responseError(w, err)
 			return
 		}
-		response(w, notes)
+		responseData(w, notes)
 	})
 
 	m.HandleFunc("/notes/create", func(w http.ResponseWriter, r *http.Request) {
@@ -84,26 +86,34 @@ func (e *Endpoints) Register(m *http.ServeMux) {
 			responseError(w, err)
 			return
 		}
-		response(w, note)
+		responseData(w, note)
 	})
+}
+
+type APIResponse struct {
+	Data interface{}
 }
 
 type APIError struct {
 	Error string
 }
 
-func response(w http.ResponseWriter, data interface{}) {
+func response(w http.ResponseWriter, res interface{}) {
 	w.Header().Add("Content-Type", "application/json")
 
-	if err := json.NewEncoder(w).Encode(data); err != nil {
+	if err := json.NewEncoder(w).Encode(res); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
+func responseData(w http.ResponseWriter, data interface{}) {
+	res := APIResponse{Data: data}
+	response(w, res)
+}
+
 func responseError(w http.ResponseWriter, err error) {
 	w.WriteHeader(http.StatusBadRequest)
-
 	res := APIError{Error: err.Error()}
 	response(w, res)
 }
