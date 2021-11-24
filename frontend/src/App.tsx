@@ -52,7 +52,7 @@ const NotesList: React.FC = () => {
       {notes.map((note) => (
         <li key={note.ID}>
           <p>{note.Text}</p>
-          <p>Created: {new Date(note.CreatedAt).toString()}</p>
+          <p>Created: {new Date(note.CreatedAt).toUTCString()}</p>
         </li>
       ))}
     </ul>
