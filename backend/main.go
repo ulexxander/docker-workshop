@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
@@ -27,10 +28,19 @@ func main() {
 	}
 }
 
+type Note struct {
+	Text      string
+	CreatedAt time.Time
+}
+
+type NoteCreateParams struct {
+	Text string
+}
+
 type Endpoints struct{}
 
 func (e *Endpoints) Register(m *http.ServeMux) {
-	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "hello\n")
+	m.HandleFunc("/notes/all", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "[]")
 	})
 }
