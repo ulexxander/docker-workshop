@@ -6,9 +6,23 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 1.5rem;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.whale-with-friends {
+  height: 30rem;
+}
+
+input,
+button {
+  font-size: inherit;
+}
+
+button {
+  margin-top: 0.5rem;
 }

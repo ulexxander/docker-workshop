@@ -1,6 +1,6 @@
 import { createEffect, createEvent, createStore, forward } from "effector";
 import { useStore } from "effector-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { apiRequest, Note, NoteCreateParams } from "./api";
 import "./App.css";
 
@@ -59,11 +59,47 @@ const NotesList: React.FC = () => {
   );
 };
 
+const AddNoteForm: React.FC = () => {
+  const [text, setText] = useState("");
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        noteCreateFx({
+          Text: text,
+        });
+      }}
+    >
+      <input
+        type="text"
+        name="text"
+        id="text"
+        placeholder="Note Text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <br />
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+const AddNote: React.FC = () => {
+  return (
+    <div>
+      <h3>Add new note</h3>
+      <AddNoteForm />
+    </div>
+  );
+};
+
 const Notes: React.FC = () => {
   return (
     <div>
       <h2>My Notes</h2>
       <NotesList />
+      <AddNote />
     </div>
   );
 };
@@ -79,6 +115,7 @@ export const App: React.FC = () => {
         <img
           src="https://www.docker.com/sites/default/files/d8/styles/large/public/2021-08/Moby-share.png?itok=Kc8zKIm4"
           alt="Docker is fun"
+          className="whale-with-friends"
         />
         <h1>Docker Workshop</h1>
       </header>
