@@ -2,7 +2,6 @@ import { createEffect, createEvent, createStore, forward } from "effector";
 import { useStore } from "effector-react";
 import { useEffect, useState } from "react";
 import { apiRequest, Note, NoteCreateParams } from "./api";
-import "./App.css";
 
 const pageMounted = createEvent();
 
