@@ -9,6 +9,8 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "effector": "^22.1.2",
+    "effector-react": "^22.0.4",
     "react": "^17.0.0",
     "react-dom": "^17.0.0"
   },
