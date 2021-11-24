@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -38,11 +37,40 @@ type NoteCreateParams struct {
 	Text string
 }
 
-type Endpoints struct{}
+type NotesStore interface {
+	AllNotes() ([]Note, error)
+	CreateNote(p NoteCreateParams) (Note, error)
+}
+
+type NotesStoreMemory struct {
+	notes []Note
+}
+
+func (ns *NotesStoreMemory) AllNotes() ([]Note, error) {
+	return ns.notes, nil
+}
+
+func (ns *NotesStoreMemory) CreateNote(p NoteCreateParams) (Note, error) {
+	note := Note{
+		Text:      p.Text,
+		CreatedAt: time.Now(),
+	}
+	ns.notes = append(ns.notes, note)
+	return note, nil
+}
+
+type Endpoints struct {
+	Notes NotesStore
+}
 
 func (e *Endpoints) Register(m *http.ServeMux) {
 	m.HandleFunc("/notes/all", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "[]")
+		notes, err := e.Notes.AllNotes()
+		if err != nil {
+			responseError(w, err)
+			return
+		}
+		response(w, notes)
 	})
 
 	m.HandleFunc("/notes/create", func(w http.ResponseWriter, r *http.Request) {
@@ -51,9 +79,10 @@ func (e *Endpoints) Register(m *http.ServeMux) {
 			responseError(w, err)
 			return
 		}
-		note := Note{
-			Text:      params.Text,
-			CreatedAt: time.Now(),
+		note, err := e.Notes.CreateNote(params)
+		if err != nil {
+			responseError(w, err)
+			return
 		}
 		response(w, note)
 	})
