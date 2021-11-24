@@ -31,6 +31,7 @@ func main() {
 }
 
 type Note struct {
+	ID        int
 	Text      string
 	CreatedAt time.Time
 }
@@ -54,6 +55,7 @@ func (ns *NotesStoreMemory) AllNotes() ([]Note, error) {
 
 func (ns *NotesStoreMemory) CreateNote(p NoteCreateParams) (Note, error) {
 	note := Note{
+		ID:        len(ns.notes),
 		Text:      p.Text,
 		CreatedAt: time.Now(),
 	}

@@ -77,6 +77,9 @@ func TestNotesEndpoints(t *testing.T) {
 		if rec.Result().StatusCode != 200 {
 			t.Fatalf("expected status code 200, got: %d", rec.Result().StatusCode)
 		}
+		if resBody.Data.ID != 0 {
+			t.Errorf("ID of created note must be 0, got: %d", resBody.Data.ID)
+		}
 		if resBody.Data.Text != text {
 			t.Errorf("Text of created note must be %s, got: %s", text, resBody.Data.Text)
 		}
