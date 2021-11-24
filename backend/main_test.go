@@ -48,7 +48,7 @@ func (c *client) Post(t *testing.T, path string, reqBody, resBody interface{}) *
 func TestNotesEndpoints(t *testing.T) {
 	mux := http.NewServeMux()
 	endpoints := Endpoints{
-		Notes: &NotesStoreMemory{},
+		Notes: NewNotesStoreMemory(),
 	}
 	endpoints.Register(mux)
 
@@ -62,6 +62,9 @@ func TestNotesEndpoints(t *testing.T) {
 		}
 		if len(resBody.Data) != 0 {
 			t.Fatalf("expected 0 notes, got: %d", len(resBody.Data))
+		}
+		if resBody.Data == nil {
+			t.Errorf("empty slice must not be nil")
 		}
 	})
 

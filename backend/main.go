@@ -14,7 +14,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	endpoints := Endpoints{
-		Notes: &NotesStoreMemory{},
+		Notes: NewNotesStoreMemory(),
 	}
 	endpoints.Register(mux)
 
@@ -47,6 +47,12 @@ type NotesStore interface {
 
 type NotesStoreMemory struct {
 	notes []Note
+}
+
+func NewNotesStoreMemory() *NotesStoreMemory {
+	return &NotesStoreMemory{
+		notes: []Note{},
+	}
 }
 
 func (ns *NotesStoreMemory) AllNotes() ([]Note, error) {
