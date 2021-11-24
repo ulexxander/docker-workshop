@@ -12,9 +12,8 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "hello\n")
-	})
+	endpoints := Endpoints{}
+	endpoints.Register(mux)
 
 	addr, ok := os.LookupEnv("HTTP_SERVER_ADDR")
 	if !ok {
@@ -26,4 +25,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("error listening http: %s", err)
 	}
+}
+
+type Endpoints struct{}
+
+func (e *Endpoints) Register(m *http.ServeMux) {
+	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "hello\n")
+	})
 }
