@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  backend:
+    image: docker-workshop-backend
+    ports:
+      - 3001:80
+
+  frontend:
+    image: docker-workshop-frontend
+    ports:
+      - 3000:80
