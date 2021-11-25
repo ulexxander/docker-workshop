@@ -1,12 +1,33 @@
 version: "3.8"
 
 services:
+  traefik:
+    image: traefik
+    command:
+      - "--entrypoints.web.address=:80"
+      - "--api=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    ports:
+      - "80:80"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+
   backend:
     image: docker-workshop-backend
-    ports:
-      - 3001:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.docker-workshop-backend.rule=Host(`backend.docker-workshop.localhost`) || (Host(`frontend.docker-workshop.localhost`) && PathPrefix(`/api`))"
+      - "traefik.http.middlewares.strip-api.stripprefix.prefixes=/api"
+      - "traefik.http.routers.docker-workshop-backend.middlewares=strip-api"
 
   frontend:
     image: docker-workshop-frontend
-    ports:
-      - 3000:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.docker-workshop-frontend.rule=Host(`frontend.docker-workshop.localhost`)"
