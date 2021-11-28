@@ -121,6 +121,6 @@ docker push ulexxander/docker-workshop-frontend:1.0.0
 ```sh
 # Now we can pull images anywhere registry is accessible!
 # Like on our production environment!
-docker push ulexxander/docker-workshop-backend:1.0.0
-docker push ulexxander/docker-workshop-frontend:1.0.0
+docker pull ulexxander/docker-workshop-backend:1.0.0
+docker pull ulexxander/docker-workshop-frontend:1.0.0
 ```
