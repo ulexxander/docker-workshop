@@ -167,4 +167,4 @@ You can follow progress with `git checkout <hash>`
 | readme - added Traefik and docker-compose section                       | 2af80721db0122b046bbd4bf3da3cdcf67cfa0a3 |
 | backend - implemented NotesStore backed by mongodb and tested it        | 41b520aaf297ee9a90e77ab8fea81575c6029b39 |
 | docker-compose mongo service - added volume to persist database         | 7a974019c97bc8f353ead1f0a39b40d9da1eab98 |
-| readme - fixed Now we can pull images section                           | 5ad5b74e22f373b676efe84f280d67621845b500 |
+| readme backend - Run locally note                                       | eed43c7b9c2317c0525b6514bfbeab66601978f1 |
