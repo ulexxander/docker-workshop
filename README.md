@@ -2,6 +2,15 @@
 
 Practical example of using Docker for those who learn it.
 
+Docker helps with:
+
+- Development
+- Testing
+- Deploying to any environment (stage, production)
+- Continuous integration and Continuous delivery
+- Quick start for new developers and contributors
+- ...and many other things...
+
 ## Backend
 
 Simple serice written in Go.
