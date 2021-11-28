@@ -1,11 +1,17 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/pkg/errors"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
@@ -30,6 +36,22 @@ func main() {
 	}
 }
 
+func setupMongo(ctx context.Context) (*mongo.Client, error) {
+	mongoURI, ok := os.LookupEnv("MONGO_URI")
+	if !ok {
+		mongoURI = "mongodb://docker-workshop:123123@localhost:27017"
+	}
+
+	log.Println("connecting to mongodb", mongoURI)
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
+	if err != nil {
+		return nil, errors.Wrap(err, "connecting to mongo")
+	}
+
+	return client, nil
+}
+
 type Note struct {
 	ID        int
 	Text      string
@@ -42,7 +64,7 @@ type NoteCreateParams struct {
 
 type NotesStore interface {
 	AllNotes() ([]Note, error)
-	CreateNote(p NoteCreateParams) (Note, error)
+	CreateNote(p NoteCreateParams) (*Note, error)
 }
 
 type NotesStoreMemory struct {
@@ -59,14 +81,58 @@ func (ns *NotesStoreMemory) AllNotes() ([]Note, error) {
 	return ns.notes, nil
 }
 
-func (ns *NotesStoreMemory) CreateNote(p NoteCreateParams) (Note, error) {
+func (ns *NotesStoreMemory) CreateNote(p NoteCreateParams) (*Note, error) {
 	note := Note{
 		ID:        len(ns.notes),
 		Text:      p.Text,
 		CreatedAt: time.Now(),
 	}
 	ns.notes = append(ns.notes, note)
-	return note, nil
+	return &note, nil
+}
+
+type NotesStoreMongo struct {
+	count      int
+	collection *mongo.Collection
+}
+
+func NewNotesStoreMongo(collection *mongo.Collection) *NotesStoreMongo {
+	return &NotesStoreMongo{
+		collection: collection,
+	}
+}
+
+func (ns *NotesStoreMongo) AllNotes() ([]Note, error) {
+	c, err := ns.collection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		return nil, errors.Wrap(err, "finding notes")
+	}
+	var notes []Note
+	if err := c.All(context.TODO(), &notes); err != nil {
+		return nil, errors.Wrap(err, "decoding notes")
+	}
+	if notes == nil {
+		notes = []Note{}
+	}
+	return notes, nil
+}
+
+func (ns *NotesStoreMongo) CreateNote(p NoteCreateParams) (*Note, error) {
+	note := Note{
+		ID:        ns.count,
+		Text:      p.Text,
+		CreatedAt: time.Now(),
+	}
+	ns.count++
+	if _, err := ns.collection.InsertOne(context.TODO(), note); err != nil {
+		return nil, errors.Wrap(err, "inserting item")
+	}
+	return &note, nil
+}
+
+func (ns *NotesStoreMongo) Reset() error {
+	_, err := ns.collection.DeleteMany(context.TODO(), bson.D{})
+	return err
 }
 
 type Endpoints struct {

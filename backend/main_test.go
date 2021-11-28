@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -46,19 +47,35 @@ func (c *client) Post(t *testing.T, path string, reqBody, resBody interface{}) *
 }
 
 func TestNotesEndpoints(t *testing.T) {
-	mux := http.NewServeMux()
-	endpoints := Endpoints{
-		Notes: NewNotesStoreMemory(),
+	ctx := context.Background()
+	mongoc, err := setupMongo(ctx)
+	if err != nil {
+		t.Fatalf("error setting up mongo: %s", err)
 	}
+	defer mongoc.Disconnect(ctx)
+
+	notes := NewNotesStoreMongo(mongoc.Database("docker-workshop-test").Collection("notes"))
+	if err := notes.Reset(); err != nil {
+		t.Fatalf("error resetting notes: %s", err)
+	}
+
+	mux := http.NewServeMux()
+	endpoints := Endpoints{Notes: notes}
 	endpoints.Register(mux)
 
 	c := client{mux}
 
 	t.Run("no notes yet", func(t *testing.T) {
-		var resBody struct{ Data []Note }
+		var resBody struct {
+			Data []Note
+			APIError
+		}
 		rec := c.Get(t, "/notes/all", nil, &resBody)
 		if rec.Result().StatusCode != 200 {
-			t.Fatalf("expected status code 200, got: %d", rec.Result().StatusCode)
+			t.Errorf("expected status code 200, got: %d", rec.Result().StatusCode)
+		}
+		if resBody.Error != "" {
+			t.Fatalf("unexpected api error: %s", resBody.Error)
 		}
 		if len(resBody.Data) != 0 {
 			t.Fatalf("expected 0 notes, got: %d", len(resBody.Data))
@@ -73,12 +90,16 @@ func TestNotesEndpoints(t *testing.T) {
 	t.Run("adding note", func(t *testing.T) {
 		var resBody struct {
 			Data Note
+			APIError
 		}
 		rec := c.Get(t, "/notes/create", NoteCreateParams{
 			Text: text,
 		}, &resBody)
 		if rec.Result().StatusCode != 200 {
-			t.Fatalf("expected status code 200, got: %d", rec.Result().StatusCode)
+			t.Errorf("expected status code 200, got: %d", rec.Result().StatusCode)
+		}
+		if resBody.Error != "" {
+			t.Fatalf("unexpected api error: %s", resBody.Error)
 		}
 		if resBody.Data.ID != 0 {
 			t.Errorf("ID of created note must be 0, got: %d", resBody.Data.ID)
@@ -94,10 +115,14 @@ func TestNotesEndpoints(t *testing.T) {
 	t.Run("created note listed", func(t *testing.T) {
 		var resBody struct {
 			Data []Note
+			APIError
 		}
 		rec := c.Get(t, "/notes/all", nil, &resBody)
 		if rec.Result().StatusCode != 200 {
-			t.Fatalf("expected status code 200, got: %d", rec.Result().StatusCode)
+			t.Errorf("expected status code 200, got: %d", rec.Result().StatusCode)
+		}
+		if resBody.Error != "" {
+			t.Fatalf("unexpected api error: %s", resBody.Error)
 		}
 		if len(resBody.Data) != 1 {
 			t.Fatalf("expected 1 notes, got: %d", len(resBody.Data))
