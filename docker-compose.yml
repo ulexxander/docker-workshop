@@ -21,7 +21,11 @@ services:
   mongo:
     image: mongo
     ports:
-      - 27017:27017 # forward port to use during development
+      # forward port to use during development
+      - 27017:27017
+    volumes:
+      # save data on host filesystem so it is not lost even if we remove container
+      - .data/mongo:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=docker-workshop
       - MONGO_INITDB_ROOT_PASSWORD=123123
