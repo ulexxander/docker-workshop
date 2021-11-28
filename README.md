@@ -68,3 +68,14 @@ Open traefik dashboard: http://traefik.localhost
 Backend is exposed at standalone domain: http://backend.docker-workshop.localhost or at http://frontend.docker-workshop.localhost/api
 
 Frontend is served at http://frontend.docker-workshop.localhost
+
+## MongoDB
+
+When we have `docker-compose` adding new containers is very easy.
+
+Few specifics of database containers:
+
+1. We probably don't want our containers to be **exposed** to the rest world - we don't forward ports and we don't need to configure reverse-proxy for them.
+2. We may still use **ports forwarding** during development (database runs inside docker container, but our app usually runs on localhost)
+3. Database containers save state to filesystem - to persist that data reliably we should use **Docker volumes**.
+4. We want our backend apps to run on same **Docker network** with database containers, so we can connect them using **hostnames** and **exposed** (not forwarded) ports.
