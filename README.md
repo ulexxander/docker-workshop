@@ -96,3 +96,31 @@ We have more options:
 - [Docker Hub](https://hub.docker.com/) - default and most popular registry (best for open-source projects, but also supports private repositories)
 - [GitLab Container Registry](https://docs.gitlab.com/ee/user/packages/container_registry) - my choise for non-open-source projects (images are protected and can be pulled only with access tokens)
 - [GitHub Container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) - similar thing
+
+We will store images in **Docker Hub** in this workshop.
+
+```sh
+# Build images that will be published
+cd backend
+docker build -t ulexxander/docker-workshop-backend:1.0.0 .
+cd ../frontend
+docker build -t ulexxander/docker-workshop-frontend:1.0.0 .
+```
+
+```sh
+# Authenticate to the images registry, you will be prompted for username and password
+docker login
+```
+
+```sh
+# Push images to the registry
+docker push ulexxander/docker-workshop-backend:1.0.0
+docker push ulexxander/docker-workshop-frontend:1.0.0
+```
+
+```sh
+# Now we can pull images anywhere registry is accessible!
+# Like on our production environment!
+docker push ulexxander/docker-workshop-backend:1.0.0
+docker push ulexxander/docker-workshop-frontend:1.0.0
+```
