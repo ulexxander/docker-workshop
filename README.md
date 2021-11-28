@@ -79,3 +79,20 @@ Few specifics of database containers:
 2. We may still use **ports forwarding** during development (database runs inside docker container, but our app usually runs on localhost)
 3. Database containers save state to filesystem - to persist that data reliably we should use **Docker volumes**.
 4. We want our backend apps to run on same **Docker network** with database containers, so we can connect them using **hostnames** and **exposed** (not forwarded) ports.
+
+## Deploying to production
+
+Because we have all our infrastructure defined in `docker-compose.yml` file - it is all we need to run our stack!
+
+Except images - some of them are public (traefik, mongo) and some of them are our custom images (docker-workshop-backend, docker-workshop-frontend).
+
+Public images are pulled from [Docker Hub](https://hub.docker.com/).
+Our images were available only locally (we produced them with `docker build`).
+
+So to **pull** our custom images in production environment we first need to **push** them to some registry (just like with git)
+
+We have more options:
+
+- [Docker Hub](https://hub.docker.com/) - default and most popular registry (best for open-source projects, but also supports private repositories)
+- [GitLab Container Registry](https://docs.gitlab.com/ee/user/packages/container_registry) - my choise for non-open-source projects (images are protected and can be pulled only with access tokens)
+- [GitHub Container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) - similar thing
