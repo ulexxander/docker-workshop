@@ -10,4 +10,5 @@ RUN go build main.go
 FROM alpine
 WORKDIR /docker-workshop
 COPY --from=builder /build/main .
+EXPOSE 80
 CMD ["./main"]
