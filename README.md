@@ -16,8 +16,11 @@ Docker helps with:
 Simple serice written in Go.
 
 ```sh
+# Ensure you are in correct directory
 cd backend
+```
 
+```sh
 # Run test with in-memory NotesStore
 go test -v . -store=memory
 
@@ -26,8 +29,12 @@ go test -v . -store=mongo
 ```
 
 ```sh
+# Run locally
+HTTP_SERVER_ADDR=:4000 go run main.go
+```
+
+```sh
 # Build image so it can be run as container
-cd backend
 docker build -t docker-workshop-backend .
 ```
 
@@ -52,8 +59,12 @@ docker container rm <container_id>
 Minimal page built using React. Project was created with command `yarn create vite docker-workshop --template react-ts`
 
 ```sh
-# Build image so it can be run as container
+# Ensure you are in correct directory
 cd frontend
+```
+
+```sh
+# Build image so it can be run as container
 docker build -t docker-workshop-frontend .
 ```
 
