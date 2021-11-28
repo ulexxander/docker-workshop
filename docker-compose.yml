@@ -28,6 +28,8 @@ services:
 
   backend:
     image: docker-workshop-backend
+    environment:
+      - MONGO_URI=mongodb://docker-workshop:123123@mongo:27017
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.docker-workshop-backend.rule=Host(`backend.docker-workshop.localhost`) || (Host(`frontend.docker-workshop.localhost`) && PathPrefix(`/api`))"
