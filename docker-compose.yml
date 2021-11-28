@@ -18,6 +18,14 @@ services:
       - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.localhost`)"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
 
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017 # forward port to use during development
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=docker-workshop
+      - MONGO_INITDB_ROOT_PASSWORD=123123
+
   backend:
     image: docker-workshop-backend
     labels:
