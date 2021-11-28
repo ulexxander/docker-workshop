@@ -16,6 +16,16 @@ Docker helps with:
 Simple serice written in Go.
 
 ```sh
+cd backend
+
+# Run test with in-memory NotesStore
+go test -v . -store=memory
+
+# Run test with MongoDB NotesStore
+go test -v . -store=mongo
+```
+
+```sh
 # Build image so it can be run as container
 cd backend
 docker build -t docker-workshop-backend .
