@@ -31,7 +31,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=123123
 
   backend:
-    image: docker-workshop-backend
+    image: ulexxander/docker-workshop-backend:1.0.0
     environment:
       - MONGO_URI=mongodb://docker-workshop:123123@mongo:27017
     labels:
@@ -41,7 +41,7 @@ services:
       - "traefik.http.routers.docker-workshop-backend.middlewares=strip-api"
 
   frontend:
-    image: docker-workshop-frontend
+    image: ulexxander/docker-workshop-frontend:1.0.0
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.docker-workshop-frontend.rule=Host(`frontend.docker-workshop.localhost`)"
