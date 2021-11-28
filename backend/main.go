@@ -17,11 +17,17 @@ import (
 func main() {
 	log.Println("starting service")
 
-	mux := http.NewServeMux()
-
-	endpoints := Endpoints{
-		Notes: NewNotesStoreMemory(),
+	ctx := context.Background()
+	mongoc, err := setupMongo(ctx)
+	if err != nil {
+		log.Fatalf("error setting up mongo: %s", err)
 	}
+	defer mongoc.Disconnect(ctx)
+
+	notes := NewNotesStoreMongo(mongoc.Database("docker-workshop").Collection("notes"))
+
+	mux := http.NewServeMux()
+	endpoints := Endpoints{Notes: notes}
 	endpoints.Register(mux)
 
 	addr, ok := os.LookupEnv("HTTP_SERVER_ADDR")
@@ -30,7 +36,7 @@ func main() {
 	}
 
 	log.Println("listening http", addr)
-	err := http.ListenAndServe(addr, mux)
+	err = http.ListenAndServe(addr, mux)
 	if err != nil {
 		log.Fatalf("error listening http: %s", err)
 	}
