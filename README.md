@@ -124,3 +124,17 @@ docker push ulexxander/docker-workshop-frontend:1.0.0
 docker pull ulexxander/docker-workshop-backend:1.0.0
 docker pull ulexxander/docker-workshop-frontend:1.0.0
 ```
+
+## Workshop Checkpoints
+
+You can follow progress with `git checkout <hash>`
+
+| Commit Message                                                          | Hash                                     |
+| ----------------------------------------------------------------------- | ---------------------------------------- |
+| prepared Dockerfile for backend and explained docker commands in README | 71fe95659f05f057bd6a26bc24c3345481fd8c6b |
+| frontend Dockerfile and more docker commands in README                  | 4d488562d2b0d726ad5f00bcc8eaff7602c5c129 |
+| simple docker-compose to run both backend and frontend                  | 709d8ab1e40f7a7f85c76fbaf16b7d7526f707ca |
+| readme - added Traefik and docker-compose section                       | 2af80721db0122b046bbd4bf3da3cdcf67cfa0a3 |
+| backend - implemented NotesStore backed by mongodb and tested it        | 41b520aaf297ee9a90e77ab8fea81575c6029b39 |
+| docker-compose mongo service - added volume to persist database         | 7a974019c97bc8f353ead1f0a39b40d9da1eab98 |
+| readme - fixed Now we can pull images section                           | 5ad5b74e22f373b676efe84f280d67621845b500 |
