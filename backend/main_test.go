@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"flag"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -46,6 +48,13 @@ func (c *client) Post(t *testing.T, path string, reqBody, resBody interface{}) *
 	return c.Request(t, http.MethodPost, path, reqBody, resBody)
 }
 
+const (
+	storeMemory = "memory"
+	storeMongo  = "mongo"
+)
+
+var flagStore = flag.String("store", storeMemory, "implementation of NotesStore - "+storeMemory+" or "+storeMongo)
+
 func TestNotesEndpoints(t *testing.T) {
 	ctx := context.Background()
 	mongoc, err := setupMongo(ctx)
@@ -54,9 +63,18 @@ func TestNotesEndpoints(t *testing.T) {
 	}
 	defer mongoc.Disconnect(ctx)
 
-	notes := NewNotesStoreMongo(mongoc.Database("docker-workshop-test").Collection("notes"))
-	if err := notes.Reset(); err != nil {
-		t.Fatalf("error resetting notes: %s", err)
+	var notes NotesStore
+	switch *flagStore {
+	case storeMemory:
+		notes = NewNotesStoreMemory()
+	case storeMongo:
+		store := NewNotesStoreMongo(mongoc.Database("docker-workshop-test").Collection("notes"))
+		if err := store.Reset(); err != nil {
+			t.Fatalf("error resetting notes: %s", err)
+		}
+		notes = store
+	default:
+		panic(fmt.Sprintf("unknown store: %s", *flagStore))
 	}
 
 	mux := http.NewServeMux()
